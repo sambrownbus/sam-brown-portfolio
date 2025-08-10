@@ -5,8 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Sam Brown — Portfolio</title>
     <link rel="stylesheet" href="./styles.css"/>
+    <style>
+      /* minimal safety if styles.css misses — keeps page usable */
+      body{background:#f5f2ee;color:#111;margin:0}
+    </style>
   </head>
   <body>
+    <!-- Header -->
     <header class="site-head">
       <div class="logo-wrap">
         <img src="./assets/signature.svg" alt="Sam Brown signature" class="logo"
@@ -16,173 +21,163 @@
       <nav class="filters" id="filters"></nav>
     </header>
 
+    <!-- Gallery -->
     <main>
       <section id="gallery" class="gallery"></section>
     </main>
 
+    <!-- Footer -->
     <footer class="site-foot">
       <p>© <span id="year"></span> Sam Brown — Brand | Film | Design</p>
     </footer>
 
-    <!-- Projects data -->
+    <!-- Data -->
     <script>
       document.getElementById('year').textContent = new Date().getFullYear();
 
-      /* Replace/add here in the future if you want — this is the only block you’ll edit for content */
-window.PROJECTS = [
-  {
-    "slug":"spiral-colors",
-    "title":"Spiral Colors",
-    "subtitle":"3D personal project — exploration of colors, textures and 3D tooling",
-    "year":2025,
-    "categories":["3D modeling","Graphics & Art"],
-    "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa72e55512071cc7dbae78_614407cf9007821feaf5134b_Spiral%20color%20swabs-p-500.png",
-    "media":[{"type":"image","src":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa72e55512071cc7dbae78_614407cf9007821feaf5134b_Spiral%20color%20swabs-p-500.png"}],
-    "source_url":"https://www.sambrown.pro/projects/spiral-colors"
-  },
-  {
-    "slug":"mountain-drive-art",
-    "title":"Mountain drive scene",
-    "subtitle":"Orthographic 3D exploration project",
-    "year":2020,
-    "categories":["3D modeling","Graphics & Art"],
-    "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa741edfe02214b02d436f_61402dad608e6285b58f65b7_dark%20mountain%20drive%20v2-p-500.png",
-    "media":[{"type":"image","src":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa741edfe02214b02d436f_61402dad608e6285b58f65b7_dark%20mountain%20drive%20v2-p-500.png"}],
-    "source_url":"https://www.sambrown.pro/projects/mountain-drive-art"
-  },
-  {
-    "slug":"rocket-graphic",
-    "title":"Happy Monday blog feature image",
-    "subtitle":"Client — Happy Monday · Concept & Design — Sam Brown",
-    "year":2019,
-    "categories":["Graphics & Art"],
-    "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa740746db49464b096d6e_61402e4562f22200ca283436_Rocket%20Graphic%20for%20email-05-p-500.png",
-    "media":[{"type":"image","src":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa740746db49464b096d6e_61402e4562f22200ca283436_Rocket%20Graphic%20for%20email-05-p-500.png"}],
-    "source_url":"https://www.sambrown.pro/projects/rocket-graphic"
-  },
-  {
-    "slug":"lenticular-print-mustang",
-    "title":"Mustang Lenticular print — gif version",
-    "subtitle":"Physical print with 3D parallax effect made in Blender",
-    "year":2024,
-    "categories":["3D modeling","Graphics & Art"],
-    "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66abef726c60fe55e674d8fb_mustang.webp",
-    "media":[{"type":"image","src":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66abef726c60fe55e674d8fb_mustang.webp"}],
-    "source_url":"https://www.sambrown.pro/projects/lenticular-print-mustang"
-  },
-  {
-    "slug":"avocado-character",
-    "title":"Avocado character",
-    "subtitle":"3D exploration project",
-    "year":2020,
-    "categories":["3D modeling"],
-    "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa7414dd6db937d669bd02_61402def090a0c124feb7d56_avacadov1-p-500.png",
-    "media":[{"type":"image","src":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa7414dd6db937d669bd02_61402def090a0c124feb7d56_avacadov1-p-500.png"}],
-    "source_url":"https://www.sambrown.pro/projects/avocado-character"
-  },
-  {
-    "slug":"flagstaff-illustration",
-    "title":"Flagstaff mountains silhouette",
-    "subtitle":"Art exploration project",
-    "year":2017,
-    "categories":["Graphics & Art"],
-    "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa7319f5704218e076f4f3_614165213e125ec52506ca47_Flagstaff%20landscape%20blue%20hue%20copy-p-500.png",
-    "media":[{"type":"image","src":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa7319f5704218e076f4f3_614165213e125ec52506ca47_Flagstaff%20landscape%20blue%20hue%20copy-p-500.png"}],
-    "source_url":"https://www.sambrown.pro/projects/flagstaff-illustration"
-  },
-  {
-    "slug":"fastest-growing-companies-podcast-art",
-    "title":"FGC podcast art",
-    "subtitle":"Client — Trainual · Logo & Design — Sam Brown",
-    "year":2022,
-    "categories":["Brand design","Graphics & Art"],
-    "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa7549e21597998eaeedff_6140230538efe00e466e7636_FGC%20podcast%20final-p-500.png",
-    "media":[{"type":"image","src":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa7549e21597998eaeedff_6140230538efe00e466e7636_FGC%20podcast%20final-p-500.png"}],
-    "source_url":"https://www.sambrown.pro/projects/fastest-growing-companies-podcast-art"
-  },
-  {
-    "slug":"social-media-quote-card",
-    "title":"Social media graphic",
-    "subtitle":"Client — Trainual · Concept & Design — Sam Brown",
-    "year":2021,
-    "categories":["Graphics & Art"],
-    "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa744a012126633e101333_61402c1b97397fbbf92fa2e2_Twitter%20quote%20-%20Tynan%20alt-p-500%20(1).png",
-    "media":[{"type":"image","src":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa744a012126633e101333_61402c1b97397fbbf92fa2e2_Twitter%20quote%20-%20Tynan%20alt-p-500%20(1).png"}],
-    "source_url":"https://www.sambrown.pro/projects/social-media-quote-card"
-  },
-  {
-    "slug":"organizing-video-project",
-    "title":"A Satisfying Cleanup Video — Highlight",
-    "subtitle":"Inspired by satisfying videos and organization games; an exploration of lighting, color, and everyday objects.",
-    "year":2023,
-    "categories":["Videography"],
-    "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66b7a06d61248888c4bd490f_cleanup-thumb.jpg",
-    "media":[{"type":"video","src":"https://www.sambrown.pro/videos/organizing-video-project"}],
-    "source_url":"https://www.sambrown.pro/videos/organizing-video-project"
-  },
-  {
-    "slug":"video-promo",
-    "title":"Trying Shattered Glass Art for the First Time — social media promo",
-    "subtitle":"Short film focused on cinematography and lighting; shot in B/W to emphasize form and the two-tone nature of the art.",
-    "year":2023,
-    "categories":["Videography"],
-    "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66b79e8e9a2c0485f0c15416_glass-thumb.jpg",
-    "media":[{"type":"video","src":"https://www.sambrown.pro/videos/video-promo"}],
-    "source_url":"https://www.sambrown.pro/videos/video-promo"
-  },
-  {
-    "slug":"lego-stop-motion",
-    "title":"A Lego Stop Motion Story",
-    "subtitle":"Four-part stop motion series exploring environment, dynamic lighting, and anamorphic lenses.",
-    "year":2023,
-    "categories":["Animation"],
-    "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66b7a14bbcf7f3dc3a5f11b8_starbucks-thumb.jpg",
-    "media":[{"type":"video","src":"https://www.sambrown.pro/videos/lego-stop-motion"}],
-    "source_url":"https://www.sambrown.pro/videos/lego-stop-motion"
-  },
-  {
-    "slug":"starbucks-stop-motion-antimation",
-    "title":"Starbucks stop motion animation",
-    "subtitle":"One-day stop motion using Starbucks items.",
-    "year":2024,
-    "categories":["Animation"],
-    "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66b7a14bbcf7f3dc3a5f11b8_starbucks-thumb.jpg",
-    "media":[{"type":"video","src":"https://www.sambrown.pro/videos/starbucks-stop-motion-antimation"}],
-    "source_url":"https://www.sambrown.pro/videos/starbucks-stop-motion-antimation"
-  },
-  {
-    "slug":"dark-mode-reveal",
-    "title":"Newsletter dark mode reveal gif",
-    "subtitle":"Client — Trainual · Concept & Design — Sam Brown",
-    "year":2021,
-    "categories":["Animation"],
-    "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66b7a1abfc222134fbf8b115_dark-mode-thumb.jpg",
-    "media":[{"type":"video","src":"https://www.sambrown.pro/videos/dark-mode-reveal"}],
-    "source_url":"https://www.sambrown.pro/videos/dark-mode-reveal"
-  },
-  {
-    "slug":"trainual-logo-rebrand",
-    "title":"Trainual logo rebrand concept animation",
-    "subtitle":"Client — Trainual · Concept & Design — Sam Brown",
-    "year":2022,
-    "categories":["Animation","Brand design"],
-    "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa72e55512071cc7dbae78_614407cf9007821feaf5134b_Spiral%20color%20swabs-p-500.png",
-    "media":[{"type":"video","src":"https://www.sambrown.pro/videos/trainual-logo-animation"}],
-    "source_url":"https://www.sambrown.pro/videos/trainual-logo-animation"
-  },
-  {
-    "slug":"satisfying-marbles",
-    "title":"Satisfying marbles animation",
-    "subtitle":"Short looping animation.",
-    "year":2020,
-    "categories":["Animation"],
-    "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa72e55512071cc7dbae78_614407cf9007821feaf5134b_Spiral%20color%20swabs-p-500.png",
-    "media":[{"type":"video","src":"https://www.sambrown.pro/videos/marbles-animation"}],
-    "source_url":"https://www.sambrown.pro/videos/marbles-animation"
-  }
-];
-</script>
+      /* Inline SVG fallback for any broken cover URLs (keeps the grid clean) */
+      const FALLBACK_POSTER = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+          <rect width="100%" height="100%" fill="#eae6df"/>
+          <rect x="40" y="40" width="1120" height="720" rx="10" fill="#ddd"/>
+          <text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle"
+                font-family="Arial, Helvetica, sans-serif" font-size="28" fill="#444">media</text>
+        </svg>
+      `);
 
+      /* PROJECTS — keep this array in sync with project.html for detail pages */
+      window.PROJECTS = [
+        {
+          "slug":"rocket-graphic",
+          "title":"Happy Monday blog feature image",
+          "subtitle":"Client — Happy Monday · Concept & Design — Sam Brown",
+          "year":2019,
+          "categories":["Graphics & Art"],
+          "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa740746db49464b096d6e_61402e4562f22200ca283436_Rocket%20Graphic%20for%20email-05-p-500.png",
+          "media":[{"type":"image","src":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa740746db49464b096d6e_61402e4562f22200ca283436_Rocket%20Graphic%20for%20email-05-p-500.png"}],
+          "source_url":"https://www.sambrown.pro/projects/rocket-graphic"
+        },
+        {
+          "slug":"dark-mode-reveal",
+          "title":"Newsletter dark mode reveal gif",
+          "subtitle":"Client — Trainual · Concept & Design — Sam Brown",
+          "year":2021,
+          "categories":["Animation"],
+          "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66b7a1abfc222134fbf8b115_dark-mode-thumb.jpg",
+          "media":[{"type":"video","src":"https://www.sambrown.pro/videos/dark-mode-reveal"}],
+          "source_url":"https://www.sambrown.pro/videos/dark-mode-reveal"
+        },
+        {
+          "slug":"starbucks-stop-motion-antimation",
+          "title":"Starbucks stop motion animation",
+          "subtitle":"One-day stop motion using Starbucks items.",
+          "year":2024,
+          "categories":["Animation"],
+          "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66b7a14bbcf7f3dc3a5f11b8_starbucks-thumb.jpg",
+          "media":[{"type":"video","src":"https://www.sambrown.pro/videos/starbucks-stop-motion-antimation"}],
+          "source_url":"https://www.sambrown.pro/videos/starbucks-stop-motion-antimation"
+        },
+        {
+          "slug":"trainual-quote-graphic",
+          "title":"Trainual quote graphic",
+          "subtitle":"Social proof graphic for Trainual",
+          "year":2021,
+          "categories":["Brand design","Graphics & Art"],
+          "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa7549e21597998eaeedff_6140230538efe00e466e7636_FGC%20podcast%20final-p-500.png",
+          "media":[{"type":"image","src":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa7549e21597998eaeedff_6140230538efe00e466e7636_FGC%20podcast%20final-p-500.png"}],
+          "source_url":"https://www.sambrown.pro/projects/fastest-growing-companies-podcast-art"
+        },
+        {
+          "slug":"spiral-colors",
+          "title":"Spiral Colors",
+          "subtitle":"3D personal project — exploration of colors, textures and 3D tooling",
+          "year":2025,
+          "categories":["Animation","Graphics & Art","3D modeling"],
+          "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa72e55512071cc7dbae78_614407cf9007821feaf5134b_Spiral%20color%20swabs-p-500.png",
+          "media":[{"type":"image","src":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa72e55512071cc7dbae78_614407cf9007821feaf5134b_Spiral%20color%20swabs-p-500.png"}],
+          "source_url":"https://www.sambrown.pro/projects/spiral-colors"
+        },
+        {
+          "slug":"video-promo",
+          "title":"Trying Shattered Glass Art for the First Time — social media promo",
+          "subtitle":"Short film focused on cinematography and lighting; shot in B/W to emphasize form.",
+          "year":2023,
+          "categories":["Videography"],
+          "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66b79e8e9a2c0485f0c15416_glass-thumb.jpg",
+          "media":[{"type":"video","src":"https://www.sambrown.pro/videos/video-promo"}],
+          "source_url":"https://www.sambrown.pro/videos/video-promo"
+        },
+        {
+          "slug":"mountain-drive-art",
+          "title":"Mountain drive scene",
+          "subtitle":"Orthographic 3D exploration project",
+          "year":2020,
+          "categories":["Animation","Graphics & Art","3D modeling"],
+          "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa741edfe02214b02d436f_61402dad608e6285b58f65b7_dark%20mountain%20drive%20v2-p-500.png",
+          "media":[{"type":"image","src":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa741edfe02214b02d436f_61402dad608e6285b58f65b7_dark%20mountain%20drive%20v2-p-500.png"}],
+          "source_url":"https://www.sambrown.pro/projects/mountain-drive-art"
+        },
+        {
+          "slug":"flagstaff-illustration",
+          "title":"Flagstaff mountains silhouette",
+          "subtitle":"Art exploration project",
+          "year":2017,
+          "categories":["Graphics & Art"],
+          "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa7319f5704218e076f4f3_614165213e125ec52506ca47_Flagstaff%20landscape%20blue%20hue%20copy-p-500.png",
+          "media":[{"type":"image","src":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa7319f5704218e076f4f3_614165213e125ec52506ca47_Flagstaff%20landscape%20blue%20hue%20copy-p-500.png"}],
+          "source_url":"https://www.sambrown.pro/projects/flagstaff-illustration"
+        },
+        {
+          "slug":"avocado-character",
+          "title":"Avocado character",
+          "subtitle":"3D exploration project",
+          "year":2020,
+          "categories":["3D modeling"],
+          "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa7414dd6db937d669bd02_61402def090a0c124feb7d56_avacadov1-p-500.png",
+          "media":[{"type":"image","src":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa7414dd6db937d669bd02_61402def090a0c124feb7d56_avacadov1-p-500.png"}],
+          "source_url":"https://www.sambrown.pro/projects/avocado-character"
+        },
+        {
+          "slug":"organizing-video-project",
+          "title":"A Satisfying Cleanup Video — Highlight",
+          "subtitle":"Inspired by satisfying videos and organization games; an exploration of lighting, color, and everyday objects.",
+          "year":2023,
+          "categories":["Videography"],
+          "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66b7a06d61248888c4bd490f_cleanup-thumb.jpg",
+          "media":[{"type":"video","src":"https://www.sambrown.pro/videos/organizing-video-project"}],
+          "source_url":"https://www.sambrown.pro/videos/organizing-video-project"
+        },
+        {
+          "slug":"social-media-quote-card",
+          "title":"Social media graphic",
+          "subtitle":"Client — Trainual · Concept & Design — Sam Brown",
+          "year":2021,
+          "categories":["Graphics & Art"],
+          "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa744a012126633e101333_61402c1b97397fbbf92fa2e2_Twitter%20quote%20-%20Tynan%20alt-p-500%20(1).png",
+          "media":[{"type":"image","src":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa744a012126633e101333_61402c1b97397fbbf92fa2e2_Twitter%20quote%20-%20Tynan%20alt-p-500%20(1).png"}],
+          "source_url":"https://www.sambrown.pro/projects/social-media-quote-card"
+        },
+        {
+          "slug":"lenticular-print-mustang",
+          "title":"Mustang Lenticular print — gif version",
+          "subtitle":"Physical print with 3D parallax effect made in Blender",
+          "year":2024,
+          "categories":["3D modeling","Graphics & Art"],
+          "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66abef726c60fe55e674d8fb_mustang.webp",
+          "media":[{"type":"image","src":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66abef726c60fe55e674d8fb_mustang.webp"}],
+          "source_url":"https://www.sambrown.pro/projects/lenticular-print-mustang"
+        },
+        {
+          "slug":"lego-stop-motion",
+          "title":"A Lego Stop Motion Story",
+          "subtitle":"Four-part stop motion series exploring environment, dynamic lighting, and anamorphic lenses.",
+          "year":2023,
+          "categories":["Animation"],
+          "cover":"./assets/lego-stop-motion.jpg",
+          "media":[{"type":"video","src":"https://www.sambrown.pro/videos/lego-stop-motion"}],
+          "source_url":"https://www.sambrown.pro/videos/lego-stop-motion"
+        }
+      ];
     </script>
 
     <!-- App (no modules) -->
@@ -190,8 +185,9 @@ window.PROJECTS = [
       (function(){
         const gallery = document.getElementById('gallery');
         const filtersWrap = document.getElementById('filters');
-        const CATS = ["All", ...Array.from(new Set(window.PROJECTS.flatMap(p => p.categories)))];
-        let active = "All";
+        const CATS = ["all", ...Array.from(new Set(window.PROJECTS.flatMap(p => p.categories)))];
+
+        let active = "all";
 
         function renderFilters(){
           filtersWrap.innerHTML = CATS.map(c =>
@@ -205,18 +201,29 @@ window.PROJECTS = [
             });
           });
         }
-        function renderGallery(){
-          const items = window.PROJECTS.filter(p => active==="All" || p.categories.includes(active));
-          gallery.innerHTML = items.map(p => `
-            <a class="card" href="./project.html#${encodeURIComponent(p.slug)}" aria-label="${p.title}">
-              <img loading="lazy" src="${p.cover}" alt="${p.title}">
-              <div class="meta">
-                <div class="title">${p.title}</div>
-              </div>
-            </a>
-          `).join('');
+
+        function cardTemplate(p){
+          /* use fallback only if cover missing/broken */
+          const imgTag = `
+            <img loading="lazy"
+                 src="${p.cover ? p.cover : FALLBACK_POSTER}"
+                 alt="${p.title}"
+                 onerror="this.onerror=null; this.src='${FALLBACK_POSTER}';">`;
+          return `
+            <a class="card" data-type="${(p.media && p.media[0] && p.media[0].type) || 'image'}"
+               href="./project.html#${encodeURIComponent(p.slug)}" aria-label="${p.title}">
+              ${imgTag}
+              <div class="meta"><div class="title">${p.title}</div></div>
+            </a>`;
         }
-        renderFilters(); renderGallery();
+
+        function renderGallery(){
+          const items = window.PROJECTS.filter(p => active==="all" || p.categories.includes(active));
+          gallery.innerHTML = items.map(cardTemplate).join('');
+        }
+
+        renderFilters();
+        renderGallery();
       })();
     </script>
   </body>
