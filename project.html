@@ -7,12 +7,40 @@
     <link rel="stylesheet" href="./styles.css"/>
     <style>
       body{background:#f5f2ee;color:#111;margin:0}
-      .container{max-width:900px;margin:auto;padding:2rem}
-      .project-title{font-size:2rem;font-weight:700;margin-bottom:0.5rem}
-      .project-subtitle{font-size:1.1rem;color:#555;margin-bottom:1.5rem}
-      .media-wrap img, .media-wrap video{width:100%;height:auto;display:block;margin-bottom:1rem}
+      .container{max-width:1000px;margin:auto;padding:2rem}
+      .project-title{font-size:2rem;font-weight:700;margin-bottom:.25rem}
+      .project-subtitle{font-size:1.1rem;color:#555;margin-bottom:1rem}
+      .project-year{font-size:.95rem;color:#777;margin-bottom:1.25rem}
+      .media-wrap{display:grid;gap:16px}
       .back-link{display:inline-block;margin-bottom:2rem;text-decoration:none;color:#111;font-weight:500}
       .back-link:hover{text-decoration:underline}
+
+      /* Custom Player */
+      .sb-player{position:relative;background:#000;border-radius:8px;overflow:hidden}
+      .sb-player .poster{display:block;width:100%;height:auto}
+      .sb-controls{
+        position:absolute;left:0;right:0;bottom:0;padding:10px 12px;
+        display:flex;align-items:center;gap:8px;background:linear-gradient(0deg,rgba(0,0,0,.55),transparent);
+        color:#fff; opacity:0; transition:opacity .2s ease;
+      }
+      .sb-player:hover .sb-controls, .sb-player.sb-playing .sb-controls{opacity:1}
+      .sb-btn{appearance:none;border:0;background:rgba(255,255,255,.12);color:#fff;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:14px}
+      .sb-btn:hover{background:rgba(255,255,255,.2)}
+      .sb-timeline{flex:1;height:6px;background:rgba(255,255,255,.25);border-radius:999px;position:relative;cursor:pointer}
+      .sb-timeline .sb-progress{position:absolute;left:0;top:0;height:100%;width:0;background:#fff;border-radius:999px}
+      .sb-time{min-width:80px;text-align:right;font-variant-numeric:tabular-nums;font-size:12px;opacity:.9}
+      .sb-vol{display:flex;align-items:center;gap:6px}
+      .sb-vol input[type="range"]{width:90px}
+      .sb-bigplay{
+        position:absolute;inset:0;display:grid;place-items:center;pointer-events:auto
+      }
+      .sb-bigplay button{
+        appearance:none;border:0;border-radius:999px;background:rgba(255,255,255,.92);color:#111;
+        width:74px;height:74px;font-size:24px;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.25)
+      }
+      .sb-bigplay button:hover{transform:scale(1.03)}
+      iframe.sb-yt{position:absolute;inset:0;width:100%;height:100%;border:0;display:none}
+      .sb-player.sb-playing iframe.sb-yt{display:block}
     </style>
   </head>
   <body>
@@ -26,7 +54,153 @@
       </div>
     </div>
 
+    <!-- YouTube Iframe API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
     <script>
+      // Simple time formatter
+      function fmt(s){s=Math.max(0,Math.floor(s));const m=Math.floor(s/60), ss=String(s%60).padStart(2,'0');return `${m}:${ss}`;}
+
+      // Custom YouTube player wrapper
+      function makeSBPlayer({mount, poster, youtubeId, title, fallbackHref}){
+        const wrap = document.createElement('div');
+        wrap.className = 'sb-player';
+        wrap.innerHTML = `
+          ${poster ? `<img class="poster" src="${poster}" alt="${title}">` : ''}
+          <div class="sb-bigplay"><button aria-label="Play">▶</button></div>
+          <iframe class="sb-yt" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" title="${title}"></iframe>
+          <div class="sb-controls" role="group" aria-label="Video controls">
+            <button class="sb-btn sb-play">Play</button>
+            <div class="sb-timeline" aria-label="Seek"><div class="sb-progress"></div></div>
+            <div class="sb-time">0:00 / 0:00</div>
+            <div class="sb-vol">
+              <button class="sb-btn sb-mute">Vol</button>
+              <input class="sb-vol-slider" type="range" min="0" max="100" value="100" aria-label="Volume">
+            </div>
+            <button class="sb-btn sb-full">Full</button>
+          </div>
+        `;
+        mount.appendChild(wrap);
+
+        if(!youtubeId){
+          // No ID? Fallback to opening source in a new tab on play.
+          const openIt = ()=> window.open(fallbackHref || '#', '_blank', 'noopener');
+          wrap.querySelector('.sb-bigplay button').addEventListener('click', openIt);
+          wrap.querySelector('.sb-play').addEventListener('click', openIt);
+          return { destroy(){} };
+        }
+
+        let player, duration=0, seeking=false;
+
+        // Init YouTube player when user clicks play (saves bandwidth)
+        function ensurePlayer(startPlaying){
+          if(player) { if(startPlaying) player.playVideo(); return; }
+          const iframe = wrap.querySelector('iframe.sb-yt');
+          const params = new URLSearchParams({
+            enablejsapi: 1,
+            rel: 0,
+            modestbranding: 1,
+            controls: 0,
+            playsinline: 1
+          });
+          iframe.src = `https://www.youtube.com/embed/${youtubeId}?${params.toString()}`;
+
+          player = new YT.Player(iframe, {
+            videoId: youtubeId,
+            playerVars: { controls: 0, modestbranding: 1, rel: 0, playsinline: 1 },
+            events: {
+              'onReady': () => {
+                wrap.classList.add('sb-playing'); // show iframe
+                if(startPlaying) player.playVideo();
+                duration = player.getDuration() || 0;
+                updateTime();
+              },
+              'onStateChange': (e) => {
+                // 1=play, 2=pause, 0=ended
+                playBtn.textContent = (e.data === 1) ? 'Pause' : 'Play';
+                if(e.data === 0){ progress.style.width = '0%'; timeline.setAttribute('aria-valuenow', 0); }
+              }
+            }
+          });
+        }
+
+        const bigPlay = wrap.querySelector('.sb-bigplay button');
+        const playBtn = wrap.querySelector('.sb-play');
+        const muteBtn = wrap.querySelector('.sb-mute');
+        const volSlider = wrap.querySelector('.sb-vol-slider');
+        const fullBtn = wrap.querySelector('.sb-full');
+        const timeline = wrap.querySelector('.sb-timeline');
+        const progress = wrap.querySelector('.sb-progress');
+        const timeEl   = wrap.querySelector('.sb-time');
+
+        function updateTime(){
+          if(!player) return;
+          const cur = player.getCurrentTime?.() || 0;
+          duration = player.getDuration?.() || duration;
+          if(!seeking && duration){
+            const pct = (cur/duration)*100;
+            progress.style.width = `${pct}%`;
+          }
+          timeEl.textContent = `${fmt(cur)} / ${fmt(duration||0)}`;
+          if(player && player.getPlayerState?.()===1) requestAnimationFrame(updateTime);
+        }
+
+        // Events
+        bigPlay.addEventListener('click', ()=>{ ensurePlayer(true); updateTime(); });
+        playBtn.addEventListener('click', ()=>{
+          ensurePlayer(); if(!player) return;
+          const state = player.getPlayerState?.();
+          if(state === 1){ player.pauseVideo(); }
+          else { player.playVideo(); updateTime(); }
+        });
+
+        muteBtn.addEventListener('click', ()=>{
+          ensurePlayer();
+          if(!player) return;
+          if(player.isMuted?.()){ player.unMute(); muteBtn.textContent='Vol'; volSlider.value = Math.round(player.getVolume?.() || 100); }
+          else { player.mute(); muteBtn.textContent='Mute'; volSlider.value = 0; }
+        });
+        volSlider.addEventListener('input', (e)=>{
+          ensurePlayer();
+          if(!player) return;
+          const v = +e.target.value;
+          player.setVolume?.(v);
+          if(v===0) player.mute(); else player.unMute();
+          muteBtn.textContent = v===0 ? 'Mute' : 'Vol';
+        });
+
+        timeline.addEventListener('pointerdown', (e)=>{
+          ensurePlayer(); if(!player) return;
+          seeking = true;
+          const rect = timeline.getBoundingClientRect();
+          const pct = Math.min(1, Math.max(0, (e.clientX - rect.left)/rect.width));
+          progress.style.width = `${pct*100}%`;
+          const newTime = pct * (player.getDuration?.() || duration || 0);
+          player.seekTo?.(newTime, true);
+        });
+        window.addEventListener('pointerup', ()=>{ if(seeking){ seeking=false; updateTime(); }});
+
+        fullBtn.addEventListener('click', ()=>{
+          const el = wrap;
+          if(document.fullscreenElement){ document.exitFullscreen(); }
+          else { el.requestFullscreen?.(); }
+        });
+
+        // Keyboard shortcuts (when focused inside container)
+        wrap.tabIndex = 0;
+        wrap.addEventListener('keydown', (e)=>{
+          if(!player) return;
+          if(e.code==='Space'){ e.preventDefault(); playBtn.click(); }
+          else if(e.key==='m' || e.key==='M'){ muteBtn.click(); }
+          else if(e.key==='f' || e.key==='F'){ fullBtn.click(); }
+          else if(e.key==='ArrowRight'){ player.seekTo?.((player.getCurrentTime?.()||0)+5, true); }
+          else if(e.key==='ArrowLeft'){ player.seekTo?.((player.getCurrentTime?.()||0)-5, true); }
+        });
+
+        return { destroy(){ player?.destroy?.(); } };
+      }
+
+      // Fallback SVG if any image fails
       const FALLBACK_POSTER = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
         <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
           <rect width="100%" height="100%" fill="#eae6df"/>
@@ -36,7 +210,8 @@
         </svg>
       `);
 
-      /* Keep this array in sync with index.html */
+      /* Keep this array in sync with index.html
+         NOTE: fill in youtubeId: "<ID>" to enable the custom inline player. */
       window.PROJECTS = [
         {
           "slug":"rocket-graphic",
@@ -54,7 +229,7 @@
           "year":2021,
           "categories":["Animation"],
           "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66b7a1abfc222134fbf8b115_dark-mode-thumb.jpg",
-          "media":[{"type":"video","src":"https://www.sambrown.pro/videos/dark-mode-reveal"}]
+          "media":[{"type":"video","src":"https://www.sambrown.pro/videos/dark-mode-reveal","youtubeId":""}]  /* TODO: add YouTube ID */
         },
         {
           "slug":"starbucks-stop-motion-antimation",
@@ -63,7 +238,7 @@
           "year":2024,
           "categories":["Animation"],
           "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66b7a14bbcf7f3dc3a5f11b8_starbucks-thumb.jpg",
-          "media":[{"type":"video","src":"https://www.sambrown.pro/videos/starbucks-stop-motion-antimation"}]
+          "media":[{"type":"video","src":"https://www.sambrown.pro/videos/starbucks-stop-motion-antimation","youtubeId":""}] /* TODO */
         },
         {
           "slug":"trainual-quote-graphic",
@@ -90,7 +265,7 @@
           "year":2023,
           "categories":["Videography"],
           "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66b79e8e9a2c0485f0c15416_glass-thumb.jpg",
-          "media":[{"type":"video","src":"https://www.sambrown.pro/videos/video-promo"}]
+          "media":[{"type":"video","src":"https://www.sambrown.pro/videos/video-promo","youtubeId":""}] /* TODO */
         },
         {
           "slug":"mountain-drive-art",
@@ -126,7 +301,7 @@
           "year":2023,
           "categories":["Videography"],
           "cover":"https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66b7a06d61248888c4bd490f_cleanup-thumb.jpg",
-          "media":[{"type":"video","src":"https://www.sambrown.pro/videos/organizing-video-project"}]
+          "media":[{"type":"video","src":"https://www.sambrown.pro/videos/organizing-video-project","youtubeId":""}] /* TODO */
         },
         {
           "slug":"social-media-quote-card",
@@ -153,19 +328,22 @@
           "year":2023,
           "categories":["Animation"],
           "cover":"./assets/lego-stop-motion.jpg",
-          "media":[{"type":"video","src":"https://www.sambrown.pro/videos/lego-stop-motion"}]
+          "media":[{"type":"video","src":"https://www.sambrown.pro/videos/lego-stop-motion","youtubeId":""}] /* TODO */
         }
       ];
 
+      // Render project
       const slug = decodeURIComponent(window.location.hash.replace('#', ''));
       const proj = window.PROJECTS.find(p => p.slug === slug);
+      const mediaWrap = document.querySelector('.media-wrap');
 
-      if(proj){
+      if(!proj){
+        document.querySelector('#project').innerHTML = '<p>Project not found.</p>';
+      }else{
         document.querySelector('.project-title').textContent = proj.title;
         document.querySelector('.project-subtitle').textContent = proj.subtitle || '';
         document.querySelector('.project-year').textContent = proj.year || '';
 
-        const mediaWrap = document.querySelector('.media-wrap');
         proj.media.forEach(m=>{
           if(m.type === 'image'){
             const img = document.createElement('img');
@@ -174,17 +352,17 @@
             img.onerror = () => img.src = FALLBACK_POSTER;
             mediaWrap.appendChild(img);
           } else if(m.type === 'video'){
-            const iframe = document.createElement('iframe');
-            iframe.src = m.src;
-            iframe.width = "100%";
-            iframe.height = "500";
-            iframe.frameBorder = "0";
-            iframe.allowFullscreen = true;
-            mediaWrap.appendChild(iframe);
+            const mount = document.createElement('div');
+            mediaWrap.appendChild(mount);
+            makeSBPlayer({
+              mount,
+              poster: proj.cover || '',
+              youtubeId: m.youtubeId || '',
+              title: proj.title,
+              fallbackHref: proj.source_url || m.src
+            });
           }
         });
-      } else {
-        document.querySelector('#project').innerHTML = '<p>Project not found.</p>';
       }
     </script>
   </body>
