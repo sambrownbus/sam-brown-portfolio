@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Sam Brown — Portfolio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles.css"/>
   </head>
   <body>
     <header class="site-head">
@@ -21,7 +21,35 @@
       <p>© 2025 Sam Brown — Brand | Film | Design</p>
     </footer>
     <div class="grain"></div>
-    <script type="module" src="./data.js"></script>
-    <script type="module" src="./app.js"></script>
+
+    <script>
+      window.PROJECTS = [{"slug": "spiral-colors", "title": "Spiral Colors", "subtitle": "3D personal project - exploration of colors, textures and 3D tooling", "year": 2025, "categories": ["Animation", "Graphics & Art", "3D modeling"], "cover": "https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa72e55512071cc7dbae78_614407cf9007821feaf5134b_Spiral%20color%20swabs-p-500.png", "media": [{"type": "image", "src": "https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa72e55512071cc7dbae78_614407cf9007821feaf5134b_Spiral%20color%20swabs-p-500.png"}], "source_url": "https://www.sambrown.pro/projects/spiral-colors"}, {"slug": "mountain-drive-art", "title": "Mountain drive scene", "subtitle": "Orthographic 3D exploration project", "year": 2020, "categories": ["Brand design", "Animation", "Graphics & Art", "3D modeling"], "cover": "https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa741edfe02214b02d436f_61402dad608e6285b58f65b7_dark%20mountain%20drive%20v2-p-500.png", "media": [{"type": "image", "src": "https://cdn.prod.website-files.com/60693a9cb9a1853e14e19fb9/66aa741edfe02214b02d436f_61402dad608e6285b58f65b7_dark%20mountain%20drive%20v2-p-500.png"}], "source_url": "https://www.sambrown.pro/projects/mountain-drive-art"}];
+      (function() {
+        const gallery = document.getElementById('gallery');
+        const filtersWrap = document.getElementById('filters');
+        const CATS = ["All", ...Array.from(new Set(window.PROJECTS.flatMap(p => p.categories)))];
+        let active = "All";
+        function renderFilters() {
+          filtersWrap.innerHTML = CATS.map(c => `<button data-cat="${c}" class="${c===active?'active':''}">${c}</button>`).join('');
+          filtersWrap.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => { active = btn.dataset.cat; renderFilters(); renderGallery(); });
+          });
+        }
+        function renderGallery() {
+          const items = window.PROJECTS.filter(p => active==="All" || p.categories.includes(active));
+          gallery.innerHTML = items.map(p => `
+            <a class="card" href="./project.html#${encodeURIComponent(p.slug)}" aria-label="${p.title}">
+              <img class="duotone" loading="lazy" src="${p.cover}" alt="${p.title}">
+              <div class="meta">
+                <div class="title">${p.title}</div>
+                <div class="cats">${p.categories.join(', ')}</div>
+              </div>
+            </a>
+          `).join('');
+        }
+        renderFilters();
+        renderGallery();
+      })();
+    </script>
   </body>
 </html>
