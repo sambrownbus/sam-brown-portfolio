@@ -1,28 +1,142 @@
+/* ———————————————————————————————
+   Sam Brown — Light Masonry Portfolio
+   (drop-in replacement for styles.css)
+   Matches original aesthetic: light theme, centered text nav, masonry grid
+——————————————————————————————— */
 
-:root { --bg:#0b0b0b; --fg:#eaeaea; --muted:#a0a0a0; --card:#111; }
-*{box-sizing:border-box}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-a{color:var(--fg);text-decoration:none}
-.site-head,.site-foot{display:flex;align-items:center;justify-content:space-between;padding:20px;position:sticky;background:linear-gradient(to bottom,rgba(11,11,11,.95),rgba(11,11,11,0));backdrop-filter:blur(8px);z-index:10}
-.site-head{top:0}.site-foot{bottom:0;justify-content:center;background:linear-gradient(to top,rgba(11,11,11,.95),rgba(11,11,11,0))}
-.site-head h1{font-size:20px;letter-spacing:.03em;margin:0;font-weight:800}
-.filters{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;max-width:70%}
-.filters button{border:1px solid #2a2a2a;background:#0e0e0e;color:var(--fg);padding:8px 12px;border-radius:999px;font-size:12px;cursor:pointer}
-.filters button.active{background:var(--fg);color:#000}
-.gallery{padding:24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
-.card{background:var(--card);border:1px solid #1a1a1a;border-radius:18px;overflow:hidden;transition:transform .2s ease, box-shadow .2s ease}
-.card:hover{transform:translateY(-2px);box-shadow:0 10px 20px rgba(0,0,0,.35)}
-.card img{width:100%;height:220px;object-fit:cover;display:block}
-.card .meta{padding:12px;display:flex;align-items:center;justify-content:space-between}
-.card .title{font-weight:700;font-size:14px}
-.card .cats{font-size:11px;color:var(--muted)}
-.grain{position:fixed;inset:0;pointer-events:none;background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22><filter id=%22n%22><feTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%222%22 stitchTiles=%22stitch%22/></filter><rect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22 opacity=%220.06%22/></svg>');mix-blend-mode:overlay;z-index:100}
-.duotone{filter:grayscale(100%) contrast(110%) brightness(95%);mix-blend-mode:normal}
-.project-page .site-head{position:static;background:none}
-.proj-content{padding:24px;max-width:900px;margin:0 auto}
-.proj-content .tag{font-size:11px;border:1px solid #2a2a2a;padding:4px 8px;border-radius:999px;margin-right:6px;color:var(--muted)}
-.proj-content .year{font-size:12px;color:var(--muted)}
-.proj-content .subtitle{color:var(--muted)}
-.proj-img{width:100%;height:auto;border-radius:18px;border:1px solid #1a1a1a;margin:16px 0}
-.video-note{margin:16px 0;font-size:14px}
-.back{font-size:14px;color:var(--muted)}
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Fraunces:wght@600;800&display=swap');
+
+:root{
+  /* Light theme */
+  --bg: #f5f2ee;          /* soft warm white */
+  --fg: #111;             /* main text */
+  --muted: #5c5c5c;       /* secondary text */
+  --line: #e5e1db;        /* subtle borders */
+  --accent: #111;         /* nav underline */
+}
+
+/* Reset-ish */
+*{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; background:var(--bg); color:var(--fg); }
+img{ max-width:100%; height:auto; display:block; }
+a{ color:inherit; text-decoration:none; }
+button{ font:inherit; color:inherit; }
+
+/* Header (logo over centered nav) */
+.site-head{
+  position: sticky; top:0; z-index:10;
+  background: var(--bg);
+  display:flex; flex-direction:column; align-items:flex-start; gap:12px;
+  padding: 24px 20px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.site-head h1{
+  margin:0;
+  font-family: "Fraunces", ui-serif, Georgia, serif;
+  font-weight:800; font-size:22px; letter-spacing:.02em;
+}
+
+/* Category nav: centered, text-only with underline on active */
+.filters{
+  width:100%;
+  display:flex; justify-content:center; align-items:center; gap:36px;
+  flex-wrap: wrap;
+}
+.filters button{
+  background: transparent;
+  border: none;
+  padding: 6px 0;
+  border-bottom: 2px solid transparent;
+  text-transform: lowercase;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight: 500;
+  letter-spacing: .01em;
+  opacity: .85;
+  transition: opacity .15s ease, border-color .15s ease, transform .15s ease;
+  cursor: pointer;
+}
+.filters button:hover{ opacity: 1; transform: translateY(-1px); }
+.filters button.active{
+  opacity: 1;
+  border-color: var(--accent);
+}
+
+/* Footer */
+.site-foot{
+  display:flex; justify-content:center; align-items:center;
+  padding: 32px 20px;
+  border-top: 1px solid var(--line);
+  background: var(--bg);
+}
+.site-foot p{ margin:0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+
+/* Masonry gallery (pure CSS via columns) */
+.gallery{
+  /* Masonry columns: adjust min width + gaps to taste */
+  column-width: 360px;       /* “target” width for a column */
+  column-gap: 24px;
+  padding: 24px;
+}
+.card{
+  /* Masonry requires inline-level boxes inside columns */
+  display: inline-block;
+  width: 100%;
+  margin: 0 0 24px;
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  transition: transform .15s ease;
+}
+.card:hover{ transform: translateY(-2px); }
+
+/* Image fills; no forced height */
+.card img{
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 6px;                 /* subtle rounding like your site */
+  border: 1px solid var(--line);
+}
+
+/* Hide dark “card chrome” from previous version */
+.card .meta{
+  /* In your original, grid is image-first; titles show later/on hover. */
+  display: none;
+}
+
+/* Project page clean style */
+.project-page .site-head{ border-bottom: 1px solid var(--line); }
+.proj-content{
+  padding: 28px 20px 64px;
+  max-width: 1100px;
+  margin: 0 auto;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+.proj-content .year{ font-size: 13px; color: var(--muted); }
+.proj-content .tag{
+  display:inline-block;
+  font-size: 12px; color: var(--muted);
+  border: 1px solid var(--line);
+  padding: 4px 8px; border-radius: 999px; margin-right: 6px;
+}
+.proj-content .subtitle{ color: var(--muted); }
+.proj-img{
+  width:100%; height:auto; margin: 16px 0 24px;
+  border-radius: 6px; border: 1px solid var(--line);
+}
+
+/* Remove the film-grain overlay for this aesthetic */
+.grain{ display:none !important; }
+
+/* Kill the previous grayscale/duotone look */
+.duotone{ filter: none !important; mix-blend-mode: normal !important; }
+
+/* Responsive tweaks */
+@media (max-width: 640px){
+  .filters{ gap:18px; }
+  .gallery{ column-width: 280px; column-gap: 16px; padding: 16px; }
+}
