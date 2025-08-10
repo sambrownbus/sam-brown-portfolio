@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Project — Sam Brown</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="project-page">
+    <header class="site-head">
+      <a href="./" class="back">← Back</a>
+      <h1 id="proj-title">Project</h1>
+    </header>
+    <main id="proj-content" class="proj-content"></main>
+    <footer class="site-foot">
+      <p>© 2025 Sam Brown — Brand | Film | Design</p>
+    </footer>
+    <div class="grain"></div>
+    <script type="module" src="./data.js"></script>
+    <script type="module">
+      import { PROJECTS } from './data.js';
+      const slug = decodeURIComponent(location.hash.replace('#',''));
+      const p = PROJECTS.find(x => x.slug === slug);
+      const wrap = document.getElementById('proj-content');
+      const title = document.getElementById('proj-title');
+      if(!p) { wrap.innerHTML = '<p>Project not found.</p>'; } 
+      else { 
+        title.textContent = p.title;
+        const tags = p.categories.map(c => `<span class="tag">${c}</span>`).join('');
+        const media = p.media.map(m => m.type === 'image' 
+            ? `<img class="proj-img duotone" loading="lazy" src="${m.src}" alt="${p.title}">`
+            : `<div class="video-note"><a href="${m.src}" target="_blank" rel="noopener">View video on original page ↗</a></div>`).join('');
+        wrap.innerHTML = `
+          <div class="meta">
+            <div class="year">${p.year || ''}</div>
+            <div class="tags">${tags}</div>
+          </div>
+          <p class="subtitle">${p.subtitle || ''}</p>
+          <div class="media">${media}</div>
+          <p class="source"><a href="${p.source_url}" target="_blank" rel="noopener">Original project page ↗</a></p>
+        `;
+      }
+    </script>
+  </body>
+</html>
