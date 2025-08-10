@@ -14,6 +14,8 @@
       .media-wrap img{width:100%;height:auto;display:block;margin-bottom:1rem}
       .back-link{display:inline-block;margin-bottom:2rem;text-decoration:none;color:#111;font-weight:500}
       .back-link:hover{text-decoration:underline}
+      .tags{display:flex;flex-wrap:wrap;gap:8px;margin:.75rem 0 1.25rem}
+      .tag{border:1px solid #e9e5df;border-radius:999px;padding:4px 10px;font-size:12px;color:#5c5c5c}
     </style>
   </head>
   <body>
@@ -23,6 +25,7 @@
         <div class="project-title"></div>
         <div class="project-subtitle"></div>
         <div class="project-year"></div>
+        <div class="tags"></div>
         <div class="media-wrap"></div>
       </div>
     </div>
@@ -30,40 +33,67 @@
     <script>
       const FALLBACK_POSTER = 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800"><rect width="100%" height="100%" fill="#eae6df"/></svg>`);
 
-      /* Keep this array in sync with index.html (same data) */
-      window.PROJECTS = window.PROJECTS || []; /* will be empty on hard load */
-      if(!window.PROJECTS.length){
-        /* lightweight copy: you can paste the same array here if you prefer strict independence */
-        window.PROJECTS = []; /* Optional: paste the full array here too */
+      async function loadProjects() {
+        // Prefer JSON
+        try {
+          const res = await fetch('./projects.json', {cache:'no-store'});
+          if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data)) return data;
+          }
+        } catch (e) {}
+
+        // Fallback JS
+        try {
+          await new Promise((resolve, reject) => {
+            const s = document.createElement('script');
+            s.src = './projects.js'; s.onload = resolve; s.onerror = reject;
+            document.head.appendChild(s);
+          });
+          if (Array.isArray(window.PROJECTS)) return window.PROJECTS;
+        } catch (e) {}
+
+        // Fallback cache
+        try {
+          const cached = localStorage.getItem('SB_PROJECTS');
+          if (cached) return JSON.parse(cached);
+        } catch (e) {}
+
+        return [];
       }
 
-      const slug = decodeURIComponent(window.location.hash.replace('#',''));
-      /* If this page was opened directly (no array present), fall back by reading from localStorage (set by index.html) */
-      try {
-        if(!window.PROJECTS.length){
-          const cached = localStorage.getItem('SB_PROJECTS');
-          if(cached) window.PROJECTS = JSON.parse(cached);
-        } else {
-          localStorage.setItem('SB_PROJECTS', JSON.stringify(window.PROJECTS));
+      function renderProject(PROJECTS){
+        const slug = decodeURIComponent(window.location.hash.replace('#',''));
+        const proj = PROJECTS.find(p => p.slug === slug);
+
+        if(!proj){
+          document.querySelector('#project').innerHTML = '<p>Project not found.</p>';
+          return;
         }
-      } catch(e){}
 
-      const proj = window.PROJECTS.find(p => p.slug === slug);
-      const mediaWrap = document.querySelector('.media-wrap');
-
-      if(!proj){
-        document.querySelector('#project').innerHTML = '<p>Project not found.</p>';
-      } else {
-        document.querySelector('.project-title').textContent = proj.title;
+        document.querySelector('.project-title').textContent = proj.title || '';
         document.querySelector('.project-subtitle').textContent = proj.subtitle || '';
         document.querySelector('.project-year').textContent = proj.year || '';
+
+        const tags = (proj.categories || proj.tags || []);
+        const tagsWrap = document.querySelector('.tags');
+        tagsWrap.innerHTML = tags.map(t => `<span class="tag">${t}</span>`).join('');
+
+        const mediaWrap = document.querySelector('.media-wrap');
+
+        // For now we just show the cover image (you asked to focus on the main gallery parity first)
         const img = document.createElement('img');
-        img.src = proj.cover || FALLBACK_POSTER;
-        img.alt = proj.title;
+        img.src = proj.cover || proj.thumb || FALLBACK_POSTER;
+        img.alt = proj.title || '';
         img.onerror = () => img.src = FALLBACK_POSTER;
         mediaWrap.appendChild(img);
       }
+
+      loadProjects().then(PROJECTS => {
+        // cache so index/project can share data
+        try { localStorage.setItem('SB_PROJECTS', JSON.stringify(PROJECTS)); } catch (e) {}
+        renderProject(PROJECTS);
+      });
     </script>
   </body>
 </html>
-
