@@ -1,142 +1,102 @@
 /* ———————————————————————————————
    Sam Brown — Light Masonry Portfolio
-   (drop-in replacement for styles.css)
-   Matches original aesthetic: light theme, centered text nav, masonry grid
+   Header: left logo, right-justified nav (centers on mobile)
+   Modern sans-serif + hover underline animation
 ——————————————————————————————— */
 
-/* Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Fraunces:wght@600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap');
 
 :root{
-  /* Light theme */
-  --bg: #f5f2ee;          /* soft warm white */
-  --fg: #111;             /* main text */
-  --muted: #5c5c5c;       /* secondary text */
-  --line: #e5e1db;        /* subtle borders */
-  --accent: #111;         /* nav underline */
+  --bg: #f5f2ee;   /* light warm canvas */
+  --fg: #111;      /* text */
+  --muted:#5c5c5c; /* secondary */
+  --line:#e9e5df;  /* hairline */
+  --accent:#111;   /* underline / focus */
 }
 
 /* Reset-ish */
-*{ box-sizing:border-box; }
-html,body{ margin:0; padding:0; background:var(--bg); color:var(--fg); }
-img{ max-width:100%; height:auto; display:block; }
-a{ color:inherit; text-decoration:none; }
-button{ font:inherit; color:inherit; }
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--fg)}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 
-/* Header (logo over centered nav) */
+/* Header: logo left, nav right; vertically centered */
 .site-head{
-  position: sticky; top:0; z-index:10;
-  background: var(--bg);
-  display:flex; flex-direction:column; align-items:flex-start; gap:12px;
-  padding: 24px 20px 12px;
-  border-bottom: 1px solid var(--line);
+  position:sticky; top:0; z-index:10;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:20px; padding:18px 22px;
+  background:var(--bg); border-bottom:1px solid var(--line);
 }
-.site-head h1{
-  margin:0;
-  font-family: "Fraunces", ui-serif, Georgia, serif;
-  font-weight:800; font-size:22px; letter-spacing:.02em;
+.logo-wrap{display:flex; align-items:center; gap:12px; min-height:40px}
+.logo{height:28px; width:auto; display:block}
+.logo-fallback{
+  display:none; font-family:"Space Grotesk", Inter, system-ui, sans-serif;
+  font-weight:700; letter-spacing:.02em;
 }
 
-/* Category nav: centered, text-only with underline on active */
+/* Nav: right-justified on desktop, centers on small screens */
 .filters{
-  width:100%;
-  display:flex; justify-content:center; align-items:center; gap:36px;
-  flex-wrap: wrap;
+  display:flex; gap:28px; align-items:center; justify-content:flex-end;
+  flex-wrap:wrap; width:100%; max-width:950px;
 }
 .filters button{
-  background: transparent;
-  border: none;
-  padding: 6px 0;
-  border-bottom: 2px solid transparent;
-  text-transform: lowercase;
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight: 500;
-  letter-spacing: .01em;
-  opacity: .85;
-  transition: opacity .15s ease, border-color .15s ease, transform .15s ease;
-  cursor: pointer;
+  position:relative; padding:6px 0; text-transform:lowercase;
+  font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:500; letter-spacing:.01em; opacity:.85; transition:opacity .15s ease, transform .15s ease;
 }
-.filters button:hover{ opacity: 1; transform: translateY(-1px); }
-.filters button.active{
-  opacity: 1;
-  border-color: var(--accent);
+.filters button:hover{opacity:1; transform:translateY(-1px)}
+/* underline animation */
+.filters button::after{
+  content:""; position:absolute; left:0; right:0; bottom:-6px; height:2px;
+  background:var(--accent); transform:scaleX(0); transform-origin:left;
+  transition:transform .22s ease;
 }
+.filters button:hover::after{ transform:scaleX(1) }
+.filters button.active{ opacity:1 }
+.filters button.active::after{ transform:scaleX(1) }
 
 /* Footer */
 .site-foot{
   display:flex; justify-content:center; align-items:center;
-  padding: 32px 20px;
-  border-top: 1px solid var(--line);
-  background: var(--bg);
+  padding:36px 20px; border-top:1px solid var(--line); background:var(--bg)
 }
-.site-foot p{ margin:0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+.site-foot p{margin:0; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif}
 
-/* Masonry gallery (pure CSS via columns) */
+/* Masonry gallery (pure CSS) */
 .gallery{
-  /* Masonry columns: adjust min width + gaps to taste */
-  column-width: 360px;       /* “target” width for a column */
-  column-gap: 24px;
-  padding: 24px;
+  column-width:360px; column-gap:24px; padding:24px;
 }
 .card{
-  /* Masonry requires inline-level boxes inside columns */
-  display: inline-block;
-  width: 100%;
-  margin: 0 0 24px;
-  break-inside: avoid;
-  -webkit-column-break-inside: avoid;
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-  transition: transform .15s ease;
+  display:inline-block; width:100%; margin:0 0 24px; break-inside:avoid;
+  transition:transform .18s ease, filter .18s ease; filter:saturate(1);
+  opacity:0; animation:fadeIn .35s ease forwards;
 }
-.card:hover{ transform: translateY(-2px); }
+@keyframes fadeIn{from{opacity:.0; transform:translateY(6px)} to{opacity:1; transform:none}}
+.card:hover{ transform:translateY(-3px) }
+.card img{ width:100%; border-radius:6px; border:1px solid var(--line) }
 
-/* Image fills; no forced height */
-.card img{
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-  border-radius: 6px;                 /* subtle rounding like your site */
-  border: 1px solid var(--line);
+/* Hide the old dark “card meta” strip */
+.card .meta{ display:none }
+
+/* Project page */
+.project-page .site-head{ border-bottom:1px solid var(--line) }
+.proj-content{ padding:28px 20px 64px; max-width:1100px; margin:0 auto; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif }
+.proj-content .year{ font-size:13px; color:var(--muted) }
+.proj-content .tag{ display:inline-block; font-size:12px; color:var(--muted); border:1px solid var(--line); padding:4px 8px; border-radius:999px; margin-right:6px }
+.proj-content .subtitle{ color:var(--muted) }
+.proj-img{ width:100%; margin:16px 0 24px; border-radius:6px; border:1px solid var(--line) }
+
+/* Remove grain/duotone */
+.grain{ display:none !important }
+.duotone{ filter:none !important; mix-blend-mode:normal !important }
+
+/* Responsive */
+@media (max-width:860px){
+  .filters{ justify-content:center; gap:18px }
 }
-
-/* Hide dark “card chrome” from previous version */
-.card .meta{
-  /* In your original, grid is image-first; titles show later/on hover. */
-  display: none;
-}
-
-/* Project page clean style */
-.project-page .site-head{ border-bottom: 1px solid var(--line); }
-.proj-content{
-  padding: 28px 20px 64px;
-  max-width: 1100px;
-  margin: 0 auto;
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-}
-.proj-content .year{ font-size: 13px; color: var(--muted); }
-.proj-content .tag{
-  display:inline-block;
-  font-size: 12px; color: var(--muted);
-  border: 1px solid var(--line);
-  padding: 4px 8px; border-radius: 999px; margin-right: 6px;
-}
-.proj-content .subtitle{ color: var(--muted); }
-.proj-img{
-  width:100%; height:auto; margin: 16px 0 24px;
-  border-radius: 6px; border: 1px solid var(--line);
-}
-
-/* Remove the film-grain overlay for this aesthetic */
-.grain{ display:none !important; }
-
-/* Kill the previous grayscale/duotone look */
-.duotone{ filter: none !important; mix-blend-mode: normal !important; }
-
-/* Responsive tweaks */
-@media (max-width: 640px){
-  .filters{ gap:18px; }
-  .gallery{ column-width: 280px; column-gap: 16px; padding: 16px; }
+@media (max-width:640px){
+  .gallery{ column-width:280px; column-gap:16px; padding:16px }
+  .site-head{ padding:16px }
+  .logo{ height:24px }
 }
